@@ -12,8 +12,17 @@ def InitScreen():
 
     MainText = Label(frameTitle, text="test")
     MainText.pack(anchor="center", fill="both")
-    SubText = Label(frameCombo, text="test2")
-    SubText.pack(anchor="center", fill="both")
+
+    global SearchListBox
+    LBScrollbar = Scrollbar(frameCombo)
+    SearchListBox = Listbox(frameCombo, activestyle='none', width=10, height=4, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
+    slist = ["1", "2", "3", "4"]
+    for i, s in enumerate(slist):
+        SearchListBox.insert(i,s)
+    SearchListBox.pack(side='left', padx=10, expand=True, fill='both')
+    LBScrollbar.pack(side="left")
+    LBScrollbar.config(command=SearchListBox.yview)
+    
     SubText2 = Label(frameEntry, text="test3")
     SubText2.pack(anchor="center", fill="both")
     SubText3 = Label(frameList, text="test4")
