@@ -15,16 +15,20 @@ def InitScreen():
 
     global SearchListBox
     LBScrollbar = Scrollbar(frameCombo)
-    SearchListBox = Listbox(frameCombo, activestyle='none', width=10, height=4, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
+    SearchListBox = Listbox(frameCombo, activestyle='none', width=10, height=2, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
     slist = ["1", "2", "3", "4"]
     for i, s in enumerate(slist):
         SearchListBox.insert(i,s)
     SearchListBox.pack(side='left', padx=10, expand=True, fill='both')
     LBScrollbar.pack(side="left")
     LBScrollbar.config(command=SearchListBox.yview)
+    sendEmailButton = Button(frameCombo, text='이메일')
+    sendEmailButton.pack(side='right', padx=10, fill='y')
     
-    SubText2 = Label(frameEntry, text="test3")
-    SubText2.pack(anchor="center", fill="both")
+    global InputLabel
+    InputLabel = Entry(frameEntry, width=40, borderwidth=12, relief='ridge')
+    InputLabel.pack(side="left", padx=10)
+
     SubText3 = Label(frameList, text="test4")
     SubText3.pack(anchor="center", fill="both")
 
