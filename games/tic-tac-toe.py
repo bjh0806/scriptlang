@@ -3,34 +3,29 @@ from tkinter import *
 class Cell(Label):
     def __init__(self, token):
         self.token = token
-        for i in range(3):
-            frame1Text = Label(frame1, image=images[0][i])
-            frame1Text.pack(side='left', fill="both")
-            frame2Text = Label(frame2, image=images[1][i])
-            frame2Text.pack(side='left', fill="both")
-            frame3Text = Label(frame3, image=images[2][i])
-            frame3Text.pack(side='left', fill="both")
 
 def onClick(event):
     global currentToken, xcount, ocount
     if currentToken % 2 == 0 and currentToken != -1:
         i = int((event.x_root - 10) / 40)
         j = int((event.y_root - 30) / 45)
-        if cells[j][i].token == ' ':
-            images[j][i].config(file=x_file)
-            cells[j][i].token = 'X'
-            xcount += 1
-            statusLabel.config(text=text2)
-            currentToken += 1
+        if 0 <= i < 3 and 0 <= j < 3:
+            if cells[j][i].token == ' ':
+                images[j][i].config(file=x_file)
+                cells[j][i].token = 'X'
+                xcount += 1
+                statusLabel.config(text=text2)
+                currentToken += 1
     elif currentToken % 2 == 1 and currentToken != -1:
         i = int((event.x_root - 10) / 40)
         j = int((event.y_root - 30) / 45)
-        if cells[j][i].token == ' ':
-            images[j][i].config(file=o_file)
-            cells[j][i].token = 'O'
-            ocount += 1
-            statusLabel.config(text=text1)
-            currentToken += 1
+        if 0 <= i < 3 and 0 <= j < 3:
+            if cells[j][i].token == ' ':
+                images[j][i].config(file=o_file)
+                cells[j][i].token = 'O'
+                ocount += 1
+                statusLabel.config(text=text1)
+                currentToken += 1
     
     flip()
 
@@ -118,11 +113,6 @@ ocount = 0
 
 images = [[PhotoImage(file = e_file) for i in range(3)] for j in range(3)]
 cells = [[Cell(' ') for i in range(3)] for j in range(3)]
-# cells = [[Label(g_Tk, image=images[i][j]) for i in range(3)] for j in range(3)]
-
-# for i in range(3):
-#     for j in range(3):
-#         cells[i][j].place(x=j*40, y=i*45)
 
 frame1 = Frame(g_Tk)
 frame1.pack(side="top", fill="x")
@@ -131,7 +121,13 @@ frame2.pack(side="top", fill="x")
 frame3 = Frame(g_Tk)
 frame3.pack(side="top", fill="x")
 
-
+for i in range(3):
+    frame1Text = Label(frame1, image=images[0][i])
+    frame1Text.pack(side='left', fill="both")
+    frame2Text = Label(frame2, image=images[1][i])
+    frame2Text.pack(side='left', fill="both")
+    frame3Text = Label(frame3, image=images[2][i])
+    frame3Text.pack(side='left', fill="both")
 
 currentToken = 0
 
