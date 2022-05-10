@@ -1,7 +1,9 @@
 from tkinter import *
+from tkinter import font
 
 def InitScreen():
-    frameTitle = Frame(g_Tk, padx=10, pady=10, bg='red')
+    fontTitle = font.Font(g_Tk, size=14, weight='bold')
+    frameTitle = Frame(g_Tk, padx=10, pady=10)
     frameTitle.pack(side="top", fill="x")
     frameCombo = Frame(g_Tk, padx=10, pady=10, bg='orange')
     frameCombo.pack(side="top", fill="x")
@@ -10,16 +12,16 @@ def InitScreen():
     frameList = Frame(g_Tk, padx=10, pady=10, bg='green')
     frameList.pack(side="bottom", fill="both", expand=True)
 
-    MainText = Label(frameTitle, text="test")
+    MainText = Label(frameTitle, font=fontTitle, text="경기도 동물 시설 검색 APP")
     MainText.pack(anchor="center", fill="both")
 
     global SearchListBox
     LBScrollbar = Scrollbar(frameCombo)
-    SearchListBox = Listbox(frameCombo, activestyle='none', width=10, height=2, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
-    slist = ["1", "2", "3", "4"]
+    SearchListBox = Listbox(frameCombo, activestyle='none', width=10, height=1, borderwidth=10, relief='ridge', yscrollcommand=LBScrollbar.set)
+    slist = ["동물 병원", "동물 약국", "유기 동물 보호소"]
     for i, s in enumerate(slist):
         SearchListBox.insert(i,s)
-    SearchListBox.pack(side='left', padx=10, expand=True, fill='both')
+    SearchListBox.pack(side='left', padx=10, fill='both')
     LBScrollbar.pack(side="left")
     LBScrollbar.config(command=SearchListBox.yview)
     sendEmailButton = Button(frameCombo, text='이메일')
