@@ -21,9 +21,15 @@ class Cell(Canvas):
 window = Tk()
 window.title("Connect Four")
 
+_MAXROW = 6
+_MAXCOL = 7
+
 frame1 = Frame(window)
 frame1.pack()
-cell = Cell(frame1, 0, 0, width=20, height=20)
-cell.grid(row=0, column=0)
+
+for i in range(_MAXROW):
+    for j in range(_MAXCOL):
+        cell = Cell(frame1, i, j, width=20, height=20)
+        cell.grid(row=i, column=j)
 
 window.mainloop()
