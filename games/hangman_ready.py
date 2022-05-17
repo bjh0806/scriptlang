@@ -10,7 +10,7 @@ class Hangman:
         self.finished = 0
         self.draw()
         self.setWord()
-        self.guess(None)
+        self.print()
 
     def setWord(self):
         self.hiddenWord = [i for i in random.choice(words)]
@@ -74,10 +74,9 @@ class Hangman:
     def guess(self, letter):
         self.count = 0
         if letter not in self.hiddenWord and letter not in self.nMissedLetters:
-            if letter != None:
-                self.nMissChar += 1
-                self.draw()
-                self.nMissedLetters.append(letter)
+            self.nMissChar += 1
+            self.draw()
+            self.nMissedLetters.append(letter)
         else:
             for i in self.hiddenWord:
                 if i == letter:
