@@ -11,7 +11,9 @@ def InitScreen():
     frameCheck = Frame(g_Tk, padx=10, pady=10)
     frameCheck.pack(side="top", fill="x")
     frameList = Frame(g_Tk, padx=10, pady=10)
-    frameList.pack(side="bottom", fill="both", expand=True)
+    frameList.pack(side="top", fill="x")
+    frameGraph = Frame(g_Tk, padx=10, pady=10)
+    frameGraph.pack(side="bottom", fill="both", expand=True)
 
     MainText = Label(frameTitle, font=fontTitle, text="경기도 동물 시설 검색 APP")
     MainText.pack(anchor="center", fill="both")
@@ -36,9 +38,14 @@ def InitScreen():
     LBScrollbar = Scrollbar(frameList)
     listBox = Listbox(frameList, selectmode='extended', width=47, height=12, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
     listBox.bind('<<ListboxSelect>>')
-    listBox.pack(side='left', anchor='n', fill='x')
-    LBScrollbar.pack(side="right", anchor='n', fill='y')
+    listBox.pack(side='left', anchor='nw', fill='x')
+    LBScrollbar.pack(side="right", anchor='ne', fill='y')
     LBScrollbar.config(comman=listBox.yview)
+
+    global GraphBox
+    GraphBox = Listbox(frameGraph, selectmode='extended', width=35, borderwidth=12, relief='ridge')
+    GraphBox.bind('<<ListboxSelect>>')
+    GraphBox.pack(side='right', fill='y')
 
 g_Tk = Tk()
 g_Tk.geometry("400x600+450+100")
