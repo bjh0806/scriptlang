@@ -10,7 +10,7 @@ def InitScreen():
     frameEntry.pack(side="top", fill="x")
     frameCheck = Frame(g_Tk, padx=10, pady=10)
     frameCheck.pack(side="top", fill="x")
-    frameList = Frame(g_Tk, padx=10, pady=10, bg='green')
+    frameList = Frame(g_Tk, padx=10, pady=10)
     frameList.pack(side="bottom", fill="both", expand=True)
 
     MainText = Label(frameTitle, font=fontTitle, text="경기도 동물 시설 검색 APP")
@@ -34,10 +34,10 @@ def InitScreen():
 
     global ListBox
     LBScrollbar = Scrollbar(frameList)
-    listBox = Listbox(frameList, selectmode='extended', width=25, height=15, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
+    listBox = Listbox(frameList, selectmode='extended', width=47, height=12, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
     listBox.bind('<<ListboxSelect>>')
-    listBox.pack(side='left', fill='y')
-    LBScrollbar.pack(side="left", fill='y')
+    listBox.pack(side='left', anchor='n', fill='x')
+    LBScrollbar.pack(side="right", anchor='n', fill='y')
     LBScrollbar.config(comman=listBox.yview)
 
 g_Tk = Tk()
