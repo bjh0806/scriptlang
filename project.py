@@ -2,6 +2,53 @@ from msilib.schema import ListBox
 from tkinter import *
 from tkinter import font
 
+def event_for_listbox(event):
+    selection = event.widget.curselection()
+    if selection:
+        index = selection[0]
+        data = event.widget.get(index)
+        print(data)
+
+def onSearch():
+    global SearchListBox
+    sels = SearchListBox.curselection()
+    iSearchIndex = 0 if len(sels) == 0 else SearchListBox.curselection()[0]
+    if iSearchIndex == 0:
+        SearchHospital()
+    elif iSearchIndex == 1:
+        pass
+    elif iSearchIndex == 2:
+        pass
+    elif iSearchIndex == 3:
+        pass
+
+def getStr(s):
+    return '' if not s else S
+
+def SearchHospital():
+    from xml.etree import ElementTree
+
+    global listBox
+    listBox.delete(0, listBox.size())
+
+    with open('xml 파일명', 'rb') as f:
+        strXml = f.read().decode('utf-8')
+    parseData = ElementTree.fromstring(strXml)
+
+    elements = parseData.iter('row')
+
+    i = 1
+
+    for item in elements:
+        part_el = item.find('CODE_VALUE')
+
+        if InputLabel.get() not in part_el.text:
+            continue
+
+        _text = '[' + str(i) + ']' + getStr(item.find('이름').text) + ':' + getStr(item.find('주소').text) + ':' + getStr(item.find('전화번호').text)
+        listBox.insert(i - 1, _text)
+        i = i + 1
+
 def InitScreen():
     fontTitle = font.Font(g_Tk, size=14, weight='bold')
     frameTitle = Frame(g_Tk, padx=10, pady=10)
@@ -37,14 +84,13 @@ def InitScreen():
     global ListBox
     LBScrollbar = Scrollbar(frameList)
     listBox = Listbox(frameList, selectmode='extended', width=47, height=12, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
-    listBox.bind('<<ListboxSelect>>')
+    listBox.bind('<<ListboxSelect>>', event_for_listbox)
     listBox.pack(side='left', anchor='nw', fill='x')
     LBScrollbar.pack(side="right", anchor='ne', fill='y')
     LBScrollbar.config(comman=listBox.yview)
 
     global GraphBox
     GraphBox = Listbox(frameGraph, selectmode='extended', width=35, borderwidth=12, relief='ridge')
-    GraphBox.bind('<<ListboxSelect>>')
     GraphBox.pack(side='right', fill='y')
 
 g_Tk = Tk()
