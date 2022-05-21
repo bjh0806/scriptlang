@@ -1,9 +1,12 @@
+from ast import parse
 from tkinter import *
 from tkinter import font
 from http.client import HTTPSConnection
+from xml.dom.minidom import Element
 
 conn = None
-server = "openapi.gg.go.kr/"
+server = "openapi.gg.go.kr"
+url = "/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_CD=41310"
 
 def connectOpenAPIServer():
     global conn, server
@@ -13,57 +16,43 @@ def getHospitalDataFromXml():
     global server, conn
     if conn == None:
         connectOpenAPIServer()
-    uri = "/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&pIndex=1&pSize=100&SIGUN_CD=41310"
-    conn.request("GET", uri)
+    conn.request("GET", url)
     req = conn.getresponse()
-    print(req.status)
+    if int(req.status) == 200:
+        return SearchHospital(req.read().decode('utf-8'))
 
-# def event_for_listbox(event):
-#     selection = event.widget.curselection()
-#     if selection:
-#         index = selection[0]
-#         data = event.widget.get(index)
-#         print(data)
+def event_for_listbox(event):
+    selection = event.widget.curselection()
+    if selection:
+        index = selection[0]
+        data = event.widget.get(index)
+        print(data)
 
-# def onSearch():
-#     global SearchListBox
-#     sels = SearchListBox.curselection()
-#     iSearchIndex = 0 if len(sels) == 0 else SearchListBox.curselection()[0]
-#     if iSearchIndex == 0:
-#         SearchHospital()
-#     elif iSearchIndex == 1:
-#         pass
-#     elif iSearchIndex == 2:
-#         pass
-#     elif iSearchIndex == 3:
-#         pass
+def onSearch():
+    getHospitalDataFromXml()
 
-# def getStr(s):
-#     return '' if not s else S
+def getStr(s):
+    return '' if not s else s
 
-# def SearchHospital():
-#     from xml.etree import ElementTree
+def SearchHospital(strXml):
+    from xml.etree import ElementTree
 
-#     global listBox
-#     listBox.delete(0, listBox.size())
+    global listBox
+    listBox.delete(0, listBox.size())
+    
+    parseData = ElementTree.fromstring(strXml)
+    
+    itemElements = parseData.iter("row")
 
-#     with open('xml 파일명', 'rb') as f:
-#         strXml = f.read().decode('utf-8')
-#     parseData = ElementTree.fromstring(strXml)
+    i = 1
 
-#     elements = parseData.iter('row')
+    for item in itemElements:
+        sigun = item.find("SIGUN_NM")
 
-#     i = 1
-
-#     for item in elements:
-#         part_el = item.find('CODE_VALUE')
-
-#         if InputLabel.get() not in part_el.text:
-#             continue
-
-#         _text = '[' + str(i) + ']' + getStr(item.find('이름').text) + ':' + getStr(item.find('주소').text) + ':' + getStr(item.find('전화번호').text)
-#         listBox.insert(i - 1, _text)
-#         i = i + 1
+        if len(sigun.text) > 0:
+            _text = '[' + str(i) + ']' + getStr(item.find('BIZPLC_NM').text) + ':' + getStr(item.find('SIGUN_NM').text) + ':' + getStr(item.find('LOCPLC_FACLT_TELNO').text)
+            listBox.insert(i - 1, _text)
+            i = i + 1
 
 def InitScreen():
     fontTitle = font.Font(g_Tk, size=14, weight='bold')
@@ -85,7 +74,7 @@ def InitScreen():
     InputLabel = Entry(frameEntry, width=40, borderwidth=12, relief='ridge')
     InputLabel.pack(side="left", expand=True)
 
-    SearchButton = Button(frameEntry, text="검색")
+    SearchButton = Button(frameEntry, text="검색", command=onSearch)
     SearchButton.pack(side="right", expand=True, fill="both")
 
     chkValue = []
@@ -97,10 +86,10 @@ def InitScreen():
     sendEmailButton = Button(frameCheck, text='이메일')
     sendEmailButton.pack(side='right', expand=True, fill="both")
 
-    global ListBox
+    global listBox
     LBScrollbar = Scrollbar(frameList)
     listBox = Listbox(frameList, selectmode='extended', width=47, height=12, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
-    # listBox.bind('<<ListboxSelect>>', event_for_listbox)
+    listBox.bind('<<ListboxSelect>>', event_for_listbox)
     listBox.pack(side='left', anchor='nw', fill='x')
     LBScrollbar.pack(side="right", anchor='ne', fill='y')
     LBScrollbar.config(comman=listBox.yview)
@@ -113,5 +102,4 @@ g_Tk = Tk()
 g_Tk.geometry("400x600+450+100")
 
 InitScreen()
-getHospitalDataFromXml()
 g_Tk.mainloop()
