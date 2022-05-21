@@ -1,53 +1,69 @@
-from msilib.schema import ListBox
 from tkinter import *
 from tkinter import font
+from http.client import HTTPSConnection
 
-def event_for_listbox(event):
-    selection = event.widget.curselection()
-    if selection:
-        index = selection[0]
-        data = event.widget.get(index)
-        print(data)
+conn = None
+server = "openapi.gg.go.kr/"
 
-def onSearch():
-    global SearchListBox
-    sels = SearchListBox.curselection()
-    iSearchIndex = 0 if len(sels) == 0 else SearchListBox.curselection()[0]
-    if iSearchIndex == 0:
-        SearchHospital()
-    elif iSearchIndex == 1:
-        pass
-    elif iSearchIndex == 2:
-        pass
-    elif iSearchIndex == 3:
-        pass
+def connectOpenAPIServer():
+    global conn, server
+    conn = HTTPSConnection(server)
 
-def getStr(s):
-    return '' if not s else S
+def getHospitalDataFromXml():
+    global server, conn
+    if conn == None:
+        connectOpenAPIServer()
+    uri = "/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&pIndex=1&pSize=100&SIGUN_CD=41310"
+    conn.request("GET", uri)
+    req = conn.getresponse()
+    print(req.status)
 
-def SearchHospital():
-    from xml.etree import ElementTree
+# def event_for_listbox(event):
+#     selection = event.widget.curselection()
+#     if selection:
+#         index = selection[0]
+#         data = event.widget.get(index)
+#         print(data)
 
-    global listBox
-    listBox.delete(0, listBox.size())
+# def onSearch():
+#     global SearchListBox
+#     sels = SearchListBox.curselection()
+#     iSearchIndex = 0 if len(sels) == 0 else SearchListBox.curselection()[0]
+#     if iSearchIndex == 0:
+#         SearchHospital()
+#     elif iSearchIndex == 1:
+#         pass
+#     elif iSearchIndex == 2:
+#         pass
+#     elif iSearchIndex == 3:
+#         pass
 
-    with open('xml 파일명', 'rb') as f:
-        strXml = f.read().decode('utf-8')
-    parseData = ElementTree.fromstring(strXml)
+# def getStr(s):
+#     return '' if not s else S
 
-    elements = parseData.iter('row')
+# def SearchHospital():
+#     from xml.etree import ElementTree
 
-    i = 1
+#     global listBox
+#     listBox.delete(0, listBox.size())
 
-    for item in elements:
-        part_el = item.find('CODE_VALUE')
+#     with open('xml 파일명', 'rb') as f:
+#         strXml = f.read().decode('utf-8')
+#     parseData = ElementTree.fromstring(strXml)
 
-        if InputLabel.get() not in part_el.text:
-            continue
+#     elements = parseData.iter('row')
 
-        _text = '[' + str(i) + ']' + getStr(item.find('이름').text) + ':' + getStr(item.find('주소').text) + ':' + getStr(item.find('전화번호').text)
-        listBox.insert(i - 1, _text)
-        i = i + 1
+#     i = 1
+
+#     for item in elements:
+#         part_el = item.find('CODE_VALUE')
+
+#         if InputLabel.get() not in part_el.text:
+#             continue
+
+#         _text = '[' + str(i) + ']' + getStr(item.find('이름').text) + ':' + getStr(item.find('주소').text) + ':' + getStr(item.find('전화번호').text)
+#         listBox.insert(i - 1, _text)
+#         i = i + 1
 
 def InitScreen():
     fontTitle = font.Font(g_Tk, size=14, weight='bold')
@@ -84,7 +100,7 @@ def InitScreen():
     global ListBox
     LBScrollbar = Scrollbar(frameList)
     listBox = Listbox(frameList, selectmode='extended', width=47, height=12, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
-    listBox.bind('<<ListboxSelect>>', event_for_listbox)
+    # listBox.bind('<<ListboxSelect>>', event_for_listbox)
     listBox.pack(side='left', anchor='nw', fill='x')
     LBScrollbar.pack(side="right", anchor='ne', fill='y')
     LBScrollbar.config(comman=listBox.yview)
@@ -97,4 +113,5 @@ g_Tk = Tk()
 g_Tk.geometry("400x600+450+100")
 
 InitScreen()
+getHospitalDataFromXml()
 g_Tk.mainloop()
