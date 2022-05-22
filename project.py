@@ -6,7 +6,7 @@ from xml.dom.minidom import Element
 
 conn = None
 server = "openapi.gg.go.kr"
-url = "/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_CD=41310"
+url = "/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96"
 
 def connectOpenAPIServer():
     global conn, server
@@ -49,7 +49,7 @@ def SearchHospital(strXml):
     for item in itemElements:
         sigun = item.find("SIGUN_NM")
 
-        if len(sigun.text) > 0:
+        if InputLabel.get() in sigun.text:
             _text = '[' + str(i) + ']' + getStr(item.find('BIZPLC_NM').text) + ':' + getStr(item.find('SIGUN_NM').text) + ':' + getStr(item.find('LOCPLC_FACLT_TELNO').text)
             listBox.insert(i - 1, _text)
             i = i + 1
