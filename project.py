@@ -3,23 +3,30 @@ from tkinter import *
 from tkinter import font
 from http.client import HTTPSConnection
 from xml.dom.minidom import Element
+from urllib.parse import quote
 
 conn = None
 server = "openapi.gg.go.kr"
-url = "/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96"
 
 def connectOpenAPIServer():
     global conn, server
     conn = HTTPSConnection(server)
 
+def userURIBuilder(uri, position):
+    if "시" not in position:
+        position += "시"
+    str = uri + quote(position)
+    return str
+
 def getHospitalDataFromXml():
     global server, conn
     if conn == None:
         connectOpenAPIServer()
-    conn.request("GET", url)
+    uri = userURIBuilder("/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_NM=", InputLabel.get())
+    conn.request("GET", uri)
     req = conn.getresponse()
     if int(req.status) == 200:
-        return SearchHospital(req.read().decode('utf-8'))
+        return SearchHospital(req.read())
 
 def event_for_listbox(event):
     selection = event.widget.curselection()
@@ -47,9 +54,9 @@ def SearchHospital(strXml):
     i = 1
 
     for item in itemElements:
-        sigun = item.find("SIGUN_NM")
+        part_el = item.find("SIGUN_NM")
 
-        if InputLabel.get() in sigun.text:
+        if InputLabel.get() in part_el.text:
             _text = '[' + str(i) + ']' + getStr(item.find('BIZPLC_NM').text) + ':' + getStr(item.find('SIGUN_NM').text) + ':' + getStr(item.find('LOCPLC_FACLT_TELNO').text)
             listBox.insert(i - 1, _text)
             i = i + 1
