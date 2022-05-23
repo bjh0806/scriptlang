@@ -2,6 +2,7 @@ from ast import parse
 from tkinter import *
 from tkinter import font
 from http.client import HTTPSConnection
+from turtle import bgcolor
 from xml.dom.minidom import Element
 from urllib.parse import quote
 
@@ -67,7 +68,7 @@ def InitScreen():
     frameEntry.pack(side="top", fill="x")
     frameCheck = Frame(g_Tk, padx=10, pady=10)
     frameCheck.pack(side="top", fill="x")
-    frameList = Frame(g_Tk, padx=10, pady=10)
+    frameList = Frame(g_Tk, padx=10)
     frameList.pack(side="top", fill="x")
     frameGraph = Frame(g_Tk, padx=10, pady=10)
     frameGraph.pack(side="bottom", fill="both", expand=True)
@@ -93,11 +94,14 @@ def InitScreen():
 
     global listBox
     LBScrollbar = Scrollbar(frameList)
-    listBox = Listbox(frameList, selectmode='extended', width=47, height=12, borderwidth=12, relief='ridge', yscrollcommand=LBScrollbar.set)
+    UBScrollbar = Scrollbar(frameList, orient='horizontal')
+    listBox = Listbox(frameList, selectmode='extended', width=50, height=12, borderwidth=12, relief='ridge', xscrollcommand=UBScrollbar.set, yscrollcommand=LBScrollbar.set)
     listBox.bind('<<ListboxSelect>>', event_for_listbox)
-    listBox.pack(side='left', anchor='nw', fill='x')
-    LBScrollbar.pack(side="right", anchor='ne', fill='y')
-    LBScrollbar.config(comman=listBox.yview)
+    LBScrollbar.pack(side="right", fill='y')
+    LBScrollbar.config(command=listBox.yview)
+    UBScrollbar.pack(side="bottom", fill='x')
+    UBScrollbar.config(command=listBox.xview)
+    listBox.pack(side='left', fill='x')
 
     global GraphBox
     GraphBox = Listbox(frameGraph, selectmode='extended', width=35, borderwidth=12, relief='ridge')
