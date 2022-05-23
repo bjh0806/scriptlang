@@ -54,10 +54,8 @@ def SearchHospital(strXml):
     i = 1
 
     for item in itemElements:
-        part_el = item.find("SIGUN_NM")
-
-        if InputLabel.get() in part_el.text:
-            _text = '[' + str(i) + ']' + getStr(item.find('BIZPLC_NM').text) + ':' + getStr(item.find('SIGUN_NM').text) + ':' + getStr(item.find('LOCPLC_FACLT_TELNO').text)
+        if getStr(item.find('BSN_STATE_NM').text) != '폐업':
+            _text = str(i) + '. ' + getStr(item.find('BIZPLC_NM').text) + ' : ' + getStr(item.find('REFINE_ROADNM_ADDR').text) + ' / ' + getStr(item.find('LOCPLC_FACLT_TELNO').text)
             listBox.insert(i - 1, _text)
             i = i + 1
 
