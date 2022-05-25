@@ -23,7 +23,16 @@ def getHospitalDataFromXml():
     global server, conn
     if conn == None:
         connectOpenAPIServer()
-    uri = userURIBuilder("/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_NM=", InputLabel.get())
+    if chkValue[0].get() == 1:
+        uri = userURIBuilder("/AnimalPharmacy?KEY=80e0c92a5694415ea393e4481125d632&SIGUN_NM=", InputLabel.get())
+    if chkValue[1].get() == 1:
+        uri = userURIBuilder("/OrganicAnimalProtectionFacilit?KEY=855ef34a84c84c44a4226774f236406a&SIGUN_NM=", InputLabel.get())
+    if chkValue[2].get() == 1:
+        uri = userURIBuilder("/DoanmalfunrlPrmisnentrp?KEY=0e630d78165442a59187a6de5fb0e55f&SIGUN_NM=", InputLabel.get())
+    if chkValue[3].get() == 1:
+        uri = userURIBuilder("/AnimalMedicalCareThing?KEY=2fd131ecbf784976954fc6678468c173&SIGUN_NM=", InputLabel.get())
+    else:
+        uri = userURIBuilder("/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_NM=", InputLabel.get())
     conn.request("GET", uri)
     req = conn.getresponse()
     if int(req.status) == 200:
@@ -55,7 +64,15 @@ def SearchHospital(strXml):
     i = 1
 
     for item in itemElements:
-        if getStr(item.find('BSN_STATE_NM').text) != '폐업':
+        if chkValue[1].get() == 1:
+            _text = str(i) + '. ' + getStr(item.find('ENTRPS_NM').text) + ' : ' + getStr(item.find('REFINE_ROADNM_ADDR').text) + ' / ' + getStr(item.find('ENTRPS_TELNO').text)
+            listBox.insert(i - 1, _text)
+            i = i + 1
+        if chkValue[2].get() == 1:
+            _text = str(i) + '. ' + getStr(item.find('BIZPLC_NM').text) + ' : ' + getStr(item.find('REFINE_ROADNM_ADDR').text) + ' / ' + getStr(item.find('TELNO').text)
+            listBox.insert(i - 1, _text)
+            i = i + 1
+        elif getStr(item.find('BSN_STATE_NM').text) != '폐업':
             _text = str(i) + '. ' + getStr(item.find('BIZPLC_NM').text) + ' : ' + getStr(item.find('REFINE_ROADNM_ADDR').text) + ' / ' + getStr(item.find('LOCPLC_FACLT_TELNO').text)
             listBox.insert(i - 1, _text)
             i = i + 1
@@ -83,6 +100,7 @@ def InitScreen():
     SearchButton = Button(frameEntry, text="검색", command=onSearch)
     SearchButton.pack(side="right", expand=True, fill="both")
 
+    global chkValue
     chkValue = []
     strCheck = ['약국', '보호소', '장묘', '기타']
     for i, s in enumerate(strCheck):
