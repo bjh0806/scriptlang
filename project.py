@@ -26,11 +26,11 @@ def getHospitalDataFromXml():
         connectOpenAPIServer()
     if SearchComboBox.get() == '동물약국':
         uri = userURIBuilder("/AnimalPharmacy?KEY=80e0c92a5694415ea393e4481125d632&SIGUN_NM=", InputLabel.get())
-    if SearchComboBox.get() == '유기동물 보호시설':
+    elif SearchComboBox.get() == '유기동물 보호시설':
         uri = userURIBuilder("/OrganicAnimalProtectionFacilit?KEY=855ef34a84c84c44a4226774f236406a&SIGUN_NM=", InputLabel.get())
-    if SearchComboBox.get() == '동물 장묘 허가업체':
+    elif SearchComboBox.get() == '동물 장묘 허가업체':
         uri = userURIBuilder("/DoanmalfunrlPrmisnentrp?KEY=0e630d78165442a59187a6de5fb0e55f&SIGUN_NM=", InputLabel.get())
-    if SearchComboBox.get() == '동물용 의료용구 판매업체':
+    elif SearchComboBox.get() == '동물용 의료용구 판매업체':
         uri = userURIBuilder("/AnimalMedicalCareThing?KEY=2fd131ecbf784976954fc6678468c173&SIGUN_NM=", InputLabel.get())
     else:
         uri = userURIBuilder("/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_NM=", InputLabel.get())
@@ -106,13 +106,6 @@ def InitScreen():
     SearchComboBox = ttk.Combobox(frameCheck, width=37, height=5, values=slist)
     SearchComboBox.set("검색 옵션 설정")
     SearchComboBox.pack(side='left', expand=True)
-
-    # global chkValue
-    # chkValue = []
-    # strCheck = ['약국', '보호소', '장묘', '기타']
-    # for i, s in enumerate(strCheck):
-    #     chkValue.append(IntVar())
-    #     Checkbutton(frameCheck, text=s, borderwidth=10, variable=chkValue[i]).pack(side="left", expand=True)
 
     sendEmailButton = Button(frameCheck, text='이메일')
     sendEmailButton.pack(side='right', expand=True, fill="both")
