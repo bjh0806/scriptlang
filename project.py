@@ -24,13 +24,13 @@ def getHospitalDataFromXml():
     global server, conn
     if conn == None:
         connectOpenAPIServer()
-    if chkValue[0].get() == 1:
+    if SearchComboBox.get() == '동물약국':
         uri = userURIBuilder("/AnimalPharmacy?KEY=80e0c92a5694415ea393e4481125d632&SIGUN_NM=", InputLabel.get())
-    if chkValue[1].get() == 1:
+    if SearchComboBox.get() == '유기동물 보호시설':
         uri = userURIBuilder("/OrganicAnimalProtectionFacilit?KEY=855ef34a84c84c44a4226774f236406a&SIGUN_NM=", InputLabel.get())
-    if chkValue[2].get() == 1:
+    if SearchComboBox.get() == '동물 장묘 허가업체':
         uri = userURIBuilder("/DoanmalfunrlPrmisnentrp?KEY=0e630d78165442a59187a6de5fb0e55f&SIGUN_NM=", InputLabel.get())
-    if chkValue[3].get() == 1:
+    if SearchComboBox.get() == '동물용 의료용구 판매업체':
         uri = userURIBuilder("/AnimalMedicalCareThing?KEY=2fd131ecbf784976954fc6678468c173&SIGUN_NM=", InputLabel.get())
     else:
         uri = userURIBuilder("/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_NM=", InputLabel.get())
@@ -65,11 +65,11 @@ def SearchHospital(strXml):
     i = 1
 
     for item in itemElements:
-        if chkValue[1].get() == 1:
+        if SearchComboBox.get() == '유기동물 보호시설':
             _text = str(i) + '. ' + getStr(item.find('ENTRPS_NM').text) + ' : ' + getStr(item.find('REFINE_ROADNM_ADDR').text) + ' / ' + getStr(item.find('ENTRPS_TELNO').text)
             listBox.insert(i - 1, _text)
             i = i + 1
-        if chkValue[2].get() == 1:
+        if SearchComboBox.get() == '동물 장묘 허가업체':
             _text = str(i) + '. ' + getStr(item.find('BIZPLC_NM').text) + ' : ' + getStr(item.find('REFINE_ROADNM_ADDR').text) + ' / ' + getStr(item.find('TELNO').text)
             listBox.insert(i - 1, _text)
             i = i + 1
