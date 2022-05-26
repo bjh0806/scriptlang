@@ -5,6 +5,7 @@ from http.client import HTTPSConnection
 from turtle import bgcolor
 from xml.dom.minidom import Element
 from urllib.parse import quote
+import tkinter.ttk as ttk
 
 conn = None
 server = "openapi.gg.go.kr"
@@ -100,12 +101,18 @@ def InitScreen():
     SearchButton = Button(frameEntry, text="검색", command=onSearch)
     SearchButton.pack(side="right", expand=True, fill="both")
 
-    global chkValue
-    chkValue = []
-    strCheck = ['약국', '보호소', '장묘', '기타']
-    for i, s in enumerate(strCheck):
-        chkValue.append(IntVar())
-        Checkbutton(frameCheck, text=s, borderwidth=10, variable=chkValue[i]).pack(side="left", expand=True)
+    global SearchComboBox
+    slist = ['동물병원', '동물약국', '유기동물 보호시설', '동물 장묘 허가업체', '동물용 의료용구 판매업체']
+    SearchComboBox = ttk.Combobox(frameCheck, width=37, height=5, values=slist)
+    SearchComboBox.set("검색 옵션 설정")
+    SearchComboBox.pack(side='left', expand=True)
+
+    # global chkValue
+    # chkValue = []
+    # strCheck = ['약국', '보호소', '장묘', '기타']
+    # for i, s in enumerate(strCheck):
+    #     chkValue.append(IntVar())
+    #     Checkbutton(frameCheck, text=s, borderwidth=10, variable=chkValue[i]).pack(side="left", expand=True)
 
     sendEmailButton = Button(frameCheck, text='이메일')
     sendEmailButton.pack(side='right', expand=True, fill="both")
