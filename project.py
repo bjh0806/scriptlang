@@ -1,7 +1,9 @@
 from ast import parse
+from re import L
 from tkinter import *
 from tkinter import font
 from http.client import HTTPSConnection
+from tkinter.tix import NoteBook
 from turtle import bgcolor
 from xml.dom.minidom import Element
 from urllib.parse import quote
@@ -38,6 +40,28 @@ def getHospitalDataFromXml():
     req = conn.getresponse()
     if int(req.status) == 200:
         return SearchHospital(req.read())
+
+popup = inputEmail = btnEmail = None
+addrEmail = None
+
+def onEmailInput():
+    global addrEmail
+    addrEmail = inputEmail.get()
+    popup.destroy()
+
+def onEmailPopup():
+    global g_Tk, addrEmail, popup
+    addrEmail = None
+    popup = Toplevel(g_Tk)
+    popup.geometry("300x150")
+    popup.title("받을 이메일 주소 입력")
+
+    global inputEmail, btnEmail
+    inputEmail = Entry(popup, width=200)
+    inputEmail.pack(fill='x', padx=10, expand=True)
+
+    btnEmail = Button(popup, text="확인", command=onEmailInput)
+    btnEmail.pack(anchor="s", padx=10, pady=10)
 
 def event_for_listbox(event):
     selection = event.widget.curselection()
