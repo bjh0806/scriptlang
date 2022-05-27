@@ -8,6 +8,7 @@ from turtle import bgcolor
 from xml.dom.minidom import Element
 from urllib.parse import quote
 import tkinter.ttk as ttk
+from email.mime.text import MIMEText
 
 conn = None
 server = "openapi.gg.go.kr"
@@ -47,6 +48,12 @@ addrEmail = None
 def onEmailInput():
     global addrEmail
     addrEmail = inputEmail.get()
+    msg = MIMEText(str(listBox.get(0, 100)))
+    if SearchComboBox.get() == '검색 옵션 설정':
+        msg['Subject'] = '동물 시설 검색 결과 - {}'.format(InputLabel.get())
+    else:
+        msg['Subject'] = '동물 시설 검색 결과 - {} / {}'.format(InputLabel.get(), SearchComboBox.get())
+    sendMail('skscjswoz1@gmail.com', addrEmail, msg)
     popup.destroy()
 
 def onEmailPopup():
@@ -63,12 +70,14 @@ def onEmailPopup():
     btnEmail = Button(popup, text="확인", command=onEmailInput)
     btnEmail.pack(anchor="s", padx=10, pady=10)
 
-def event_for_listbox(event):
-    selection = event.widget.curselection()
-    if selection:
-        index = selection[0]
-        data = event.widget.get(index)
-        print(data)
+def sendMail(fromAddr, toAddr, msg):
+    import smtplib
+    s = smtplib.SMTP("smtp.gmail.com", 587)
+    s.starttls()
+
+    s.login('skscjswoz1@gmail.com', 'hzyzzjteuahhhlhm')
+    s.sendmail(fromAddr, [toAddr], msg.as_string())
+    s.close()
 
 def onSearch():
     getHospitalDataFromXml()
@@ -131,14 +140,13 @@ def InitScreen():
     SearchComboBox.set("검색 옵션 설정")
     SearchComboBox.pack(side='left', expand=True)
 
-    sendEmailButton = Button(frameCheck, text='이메일')
+    sendEmailButton = Button(frameCheck, text='이메일', command=onEmailPopup)
     sendEmailButton.pack(side='right', expand=True, fill="both")
 
     global listBox
     LBScrollbar = Scrollbar(frameList)
     UBScrollbar = Scrollbar(frameList, orient='horizontal')
     listBox = Listbox(frameList, selectmode='extended', width=50, height=12, borderwidth=12, relief='ridge', xscrollcommand=UBScrollbar.set, yscrollcommand=LBScrollbar.set)
-    listBox.bind('<<ListboxSelect>>', event_for_listbox)
     LBScrollbar.pack(side="right", fill='y')
     LBScrollbar.config(command=listBox.yview)
     UBScrollbar.pack(side="bottom", fill='x')
