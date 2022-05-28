@@ -24,7 +24,7 @@ class ImageLabel(Label):
             self.setImage(filenameOrUrl)
     def setImage(self, flienameOrUrl):
         from PIL import Image, ImageTk
-        if flienameOrUrl.startwith('http'):
+        if flienameOrUrl.startswith('http'):
             from io import BytesIO
             import urllib.request
 
@@ -40,17 +40,12 @@ class ImageLabel(Label):
         elif flienameOrUrl:
             im = Image.open(flienameOrUrl)
 
-        im = im.resize((self.sidth, self.height), Image.ANTIALIAS)
+        im = im.resize((self.width, self.height), Image.ANTIALIAS)
         img = ImageTk.PhotoImage(im)
 
         self.configure(image = img)
 
         self.image = img
-
-def change_img():
-    global imageLabel
-    path = inputBox.get()
-    imageLabel.setImage(path)
 
 def connectOpenAPIServer():
     global conn, server
@@ -195,6 +190,9 @@ def InitScreen():
     global GraphBox
     GraphBox = Listbox(frameGraph, selectmode='extended', width=35, borderwidth=12, relief='ridge')
     GraphBox.pack(side='right', fill='y')
+    imageLabel = ImageLabel(frameGraph, width=100, height=100)
+    imageLabel.setImage('logo.png')
+    imageLabel.pack()
 
 g_Tk = Tk()
 g_Tk.geometry("400x600+450+100")
