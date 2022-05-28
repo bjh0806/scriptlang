@@ -47,6 +47,40 @@ class ImageLabel(Label):
 
         self.image = img
 
+class ImageButton(Button):
+    def __init__(self, parent, filenameOrUrl=None, width=0, height=0):
+        super().__init__(parent)
+        if width:
+            self.width = width
+        if height:
+            self.height = height
+        if filenameOrUrl:
+            self.setImage(filenameOrUrl)
+    def setImage(self, flienameOrUrl):
+        from PIL import Image, ImageTk
+        if flienameOrUrl.startswith('http'):
+            from io import BytesIO
+            import urllib.request
+
+            url = flienameOrUrl
+            try:
+                with urllib.request.urlopen(url) as u:
+                    raw_data = u.read()
+            except urllib.error.URLError:
+                print('urllib.error.URLError!')
+                return
+
+            im = Image.open(BytesIO(raw_data))
+        elif flienameOrUrl:
+            im = Image.open(flienameOrUrl)
+
+        im = im.resize((self.width, self.height), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(im)
+
+        self.configure(image = img)
+
+        self.image = img
+
 def connectOpenAPIServer():
     global conn, server
     conn = HTTPSConnection(server)
@@ -112,6 +146,9 @@ def sendMail(fromAddr, toAddr, msg):
     s.login('skscjswoz1@gmail.com', 'hzyzzjteuahhhlhm')
     s.sendmail(fromAddr, [toAddr], msg.as_string())
     s.close()
+
+def Pressed():
+    pass
 
 def onSearch():
     getHospitalDataFromXml()
@@ -190,9 +227,12 @@ def InitScreen():
     global GraphBox
     GraphBox = Listbox(frameGraph, selectmode='extended', width=35, borderwidth=12, relief='ridge')
     GraphBox.pack(side='right', fill='y')
-    imageLabel = ImageLabel(frameGraph, width=100, height=100)
+    imageLabel = ImageButton(frameGraph, width=100, height=90)
     imageLabel.setImage('logo.png')
     imageLabel.pack()
+    imageButton = ImageButton(frameGraph, width=100, height=100)
+    imageButton.setImage('map.png')
+    imageButton.pack(side='bottom')
 
 g_Tk = Tk()
 g_Tk.geometry("400x600+450+100")
