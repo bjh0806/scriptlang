@@ -13,6 +13,45 @@ from email.mime.text import MIMEText
 conn = None
 server = "openapi.gg.go.kr"
 
+class ImageLabel(Label):
+    def __init__(self, parent, filenameOrUrl=None, width=0, height=0):
+        super().__init__(parent)
+        if width:
+            self.width = width
+        if height:
+            self.height = height
+        if filenameOrUrl:
+            self.setImage(filenameOrUrl)
+    def setImage(self, flienameOrUrl):
+        from PIL import Image, ImageTk
+        if flienameOrUrl.startwith('http'):
+            from io import BytesIO
+            import urllib.request
+
+            url = flienameOrUrl
+            try:
+                with urllib.request.urlopen(url) as u:
+                    raw_data = u.read()
+            except urllib.error.URLError:
+                print('urllib.error.URLError!')
+                return
+
+            im = Image.open(BytesIO(raw_data))
+        elif flienameOrUrl:
+            im = Image.open(flienameOrUrl)
+
+        im = im.resize((self.sidth, self.height), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(im)
+
+        self.configure(image = img)
+
+        self.image = img
+
+def change_img():
+    global imageLabel
+    path = inputBox.get()
+    imageLabel.setImage(path)
+
 def connectOpenAPIServer():
     global conn, server
     conn = HTTPSConnection(server)
