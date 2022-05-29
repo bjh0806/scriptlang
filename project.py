@@ -13,40 +13,6 @@ from email.mime.text import MIMEText
 conn = None
 server = "openapi.gg.go.kr"
 
-class ImageLabel(Label):
-    def __init__(self, parent, filenameOrUrl=None, width=0, height=0):
-        super().__init__(parent)
-        if width:
-            self.width = width
-        if height:
-            self.height = height
-        if filenameOrUrl:
-            self.setImage(filenameOrUrl)
-    def setImage(self, flienameOrUrl):
-        from PIL import Image, ImageTk
-        if flienameOrUrl.startswith('http'):
-            from io import BytesIO
-            import urllib.request
-
-            url = flienameOrUrl
-            try:
-                with urllib.request.urlopen(url) as u:
-                    raw_data = u.read()
-            except urllib.error.URLError:
-                print('urllib.error.URLError!')
-                return
-
-            im = Image.open(BytesIO(raw_data))
-        elif flienameOrUrl:
-            im = Image.open(flienameOrUrl)
-
-        im = im.resize((self.width, self.height), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(im)
-
-        self.configure(image = img)
-
-        self.image = img
-
 class ImageButton(Button):
     def __init__(self, parent, filenameOrUrl=None, width=0, height=0):
         super().__init__(parent)
@@ -124,7 +90,7 @@ def onEmailInput():
     sendMail('skscjswoz1@gmail.com', addrEmail, msg)
     popup.destroy()
 
-def onEmailPopup():
+def onEmailPopup(event):
     global g_Tk, addrEmail, popup
     addrEmail = None
     popup = Toplevel(g_Tk)
@@ -150,7 +116,7 @@ def sendMail(fromAddr, toAddr, msg):
 def Pressed():
     pass
 
-def onSearch():
+def onSearch(event):
     getHospitalDataFromXml()
 
 def getStr(s):
@@ -202,7 +168,9 @@ def InitScreen():
     InputLabel = Entry(frameEntry, width=40, borderwidth=12, relief='ridge')
     InputLabel.pack(side="left", expand=True)
 
-    SearchButton = Button(frameEntry, text="검색", command=onSearch)
+    SearchButton = ImageButton(frameEntry, width=20, height=20)
+    SearchButton.setImage('glass.png')
+    SearchButton.bind('<Button-1>', onSearch)
     SearchButton.pack(side="right", expand=True, fill="both")
 
     global SearchComboBox
@@ -211,7 +179,9 @@ def InitScreen():
     SearchComboBox.set("검색 옵션 설정")
     SearchComboBox.pack(side='left', expand=True)
 
-    sendEmailButton = Button(frameCheck, text='이메일', command=onEmailPopup)
+    sendEmailButton = ImageButton(frameCheck, width=35, height=25)
+    sendEmailButton.setImage('gmail.png')
+    sendEmailButton.bind('<Button-1>', onEmailPopup)
     sendEmailButton.pack(side='right', expand=True, fill="both")
 
     global listBox
