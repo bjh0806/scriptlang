@@ -149,7 +149,7 @@ def SearchHospital(strXml):
             i = i + 1
 
 def InitScreen():
-    fontTitle = font.Font(g_Tk, size=14, weight='bold')
+    fontTitle = font.Font(g_Tk, size=14, family='배달의민족 한나는 열한살')
     frameTitle = Frame(g_Tk, padx=10, pady=10)
     frameTitle.pack(side="top", fill="x")
     frameEntry = Frame(g_Tk, padx=10, pady=10)
