@@ -9,6 +9,9 @@ from xml.dom.minidom import Element
 from urllib.parse import quote
 import tkinter.ttk as ttk
 from email.mime.text import MIMEText
+import folium
+import webbrowser
+from xml.etree import ElementTree
 
 conn = None
 server = "openapi.gg.go.kr"
@@ -113,8 +116,47 @@ def sendMail(fromAddr, toAddr, msg):
     s.sendmail(fromAddr, [toAddr], msg.as_string())
     s.close()
 
-def Pressed():
-    pass
+def Pressed(event):
+    global listBox, parseData
+
+    sels = listBox.curselection()
+    iSearchIndex = 0 if len(sels) == 0 else listBox.curselection()[0]
+
+    itemElements = parseData.iter("row")
+
+    i = 0
+
+    for item in itemElements:
+        if SearchComboBox.get() == '유기동물 보호시설':
+            if i == iSearchIndex:
+                locationx = item.find('REFINE_WGS84_LAT').text
+                locationy = item.find('REFINE_WGS84_LOGT').text
+                name = getStr(item.find('ENTRPS_NM').text)
+                map_osm = folium.Map(location=[locationx, locationy], zoom_start=30)
+                folium.Marker([locationx, locationy], popup=name).add_to(map_osm)
+                map_osm.save('osm.html')
+                webbrowser.open_new('osm.html')
+            i = i + 1
+        if SearchComboBox.get() == '동물 장묘 허가업체':
+            if i == iSearchIndex:
+                locationx = item.find('REFINE_WGS84_LAT').text
+                locationy = item.find('REFINE_WGS84_LOGT').text
+                name = getStr(item.find('BIZPLC_NM').text)
+                map_osm = folium.Map(location=[locationx, locationy], zoom_start=30)
+                folium.Marker([locationx, locationy], popup=name).add_to(map_osm)
+                map_osm.save('osm.html')
+                webbrowser.open_new('osm.html')
+            i = i + 1
+        elif getStr(item.find('BSN_STATE_NM').text) != '폐업':
+            if i == iSearchIndex:
+                locationx = item.find('REFINE_WGS84_LAT').text
+                locationy = item.find('REFINE_WGS84_LOGT').text
+                name = getStr(item.find('BIZPLC_NM').text)
+                map_osm = folium.Map(location=[locationx, locationy], zoom_start=30)
+                folium.Marker([locationx, locationy], popup=name).add_to(map_osm)
+                map_osm.save('osm.html')
+                webbrowser.open_new('osm.html')
+            i = i + 1
 
 def onSearch(event):
     getHospitalDataFromXml()
@@ -123,9 +165,7 @@ def getStr(s):
     return '' if not s else s
 
 def SearchHospital(strXml):
-    from xml.etree import ElementTree
-
-    global listBox
+    global listBox, parseData
     listBox.delete(0, listBox.size())
     
     parseData = ElementTree.fromstring(strXml)
@@ -202,10 +242,10 @@ def InitScreen():
     imageLabel.pack()
     imageButton = ImageButton(frameGraph, width=100, height=100)
     imageButton.setImage('map.png')
+    imageButton.bind('<Button-1>', Pressed)
     imageButton.pack(side='bottom')
 
 g_Tk = Tk()
 g_Tk.geometry("400x600+450+100")
-
 InitScreen()
 g_Tk.mainloop()
