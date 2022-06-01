@@ -21,10 +21,77 @@ class Configuration:
     def score(row, dices):       # 정적 메소드 (객체 없이 사용 가능)
         # TODO: 구현
         num = 0
+        count = [0 for i in range(6)]
+        list = []
+        ccount = 1
         for i in range(6):
             if i == row:
                 for j in range(5):
                     if Dice.getRoll(dices[j]) == row + 1:
                         num += 1
-        return num
+        if row == 8:
+            for i in range(5):
+                count[Dice.getRoll(dices[i]) - 1] += 1
+            for i in range(6):
+                if count[i] >= 3:
+                    for j in range(6):
+                        num += count[j] * (j + 1)
+                        if j == 5:
+                            break
+        if row == 9:
+            for i in range(5):
+                count[Dice.getRoll(dices[i]) - 1] += 1
+            for i in range(6):
+                if count[i] >= 4:
+                    for j in range(6):
+                        num += count[j] * (j + 1)
+                        if j == 5:
+                            break
+        if row == 10:
+            for i in range(5):
+                count[Dice.getRoll(dices[i]) - 1] += 1
+            if 3 in count and 2 in count:
+                for i in range(6):
+                    num += count[i] * (i + 1)
+                    if i == 5:
+                        break
+        if row == 11:
+            for i in range(5):
+                list.append(Dice.getRoll(dices[i]))
+            list.sort()
+            for i in range(4):
+                if list[i + 1] == list[i]:
+                    continue
+                elif list[i + 1] == list[i] + 1:
+                    ccount += 1
+                else:
+                    ccount = 1
+            if ccount >= 4:
+                num = 30
+        if row == 12:
+            for i in range(5):
+                list.append(Dice.getRoll(dices[i]))
+            list.sort()
+            for i in range(4):
+                if list[i + 1] == list[i]:
+                    continue
+                elif list[i + 1] == list[i] + 1:
+                    ccount += 1
+                else:
+                    ccount = 1
+            if ccount >= 5:
+                num = 40
+        if row == 13:
+            first = Dice.getRoll(dices[0])
+            for i in range(5):
+                if Dice.getRoll(dices[i]) != first:
+                    return -1
+            num = 50
+        if row == 14:
+            for i in range(5):
+                num += Dice.getRoll(dices[i])
+        if 6 <= row <= 7:
+            return -1
+        else:
+            return num
 
