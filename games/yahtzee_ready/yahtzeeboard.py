@@ -148,12 +148,9 @@ class YahtzeeBoard:
         # -> cur_player.getUpperScore() 점수에 따라
         #    UI의 UPPERTOTAL, UPPERBONUS 에 내용 채우기.
         # TODO: 구현
-        uptotal = 0
         if cur_player.allUpperUsed():
             self.fields[6][self.player].config(text=cur_player.getUpperScore())
-            for i in range(6):
-                uptotal += cur_player.scores[i] * (i + 1)
-            if uptotal >= 63:
+            if cur_player.getUpperScore() >= 63:
                 self.fields[7][self.player].config(text='35')
 
         # LOWER category 전부 사용되었으면(cur_player.allLowerUsed()로써 확인) 

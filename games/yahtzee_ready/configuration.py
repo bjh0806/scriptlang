@@ -28,7 +28,7 @@ class Configuration:
             if i == row:
                 for j in range(5):
                     if Dice.getRoll(dices[j]) == row + 1:
-                        num += 1
+                        num += (row + 1)
         if row == 8:
             for i in range(5):
                 count[Dice.getRoll(dices[i]) - 1] += 1
