@@ -190,11 +190,12 @@ def SearchHospital(strXml):
 
 def InitScreen():
     fontTitle = font.Font(g_Tk, size=14, family='배달의민족 한나는 열한살')
+    fontText = font.Font(g_Tk, size=12, family='배달의민족 한나체 Air')
     frameTitle = Frame(g_Tk, padx=10, pady=10)
     frameTitle.pack(side="top", fill="x")
-    frameEntry = Frame(g_Tk, padx=10, pady=10)
+    frameEntry = Frame(g_Tk, padx=10, pady=5)
     frameEntry.pack(side="top", fill="x")
-    frameCheck = Frame(g_Tk, padx=10, pady=10)
+    frameCheck = Frame(g_Tk, padx=10, pady=5)
     frameCheck.pack(side="top", fill="x")
     frameList = Frame(g_Tk, padx=10)
     frameList.pack(side="top", fill="x")
@@ -205,7 +206,8 @@ def InitScreen():
     MainText.pack(anchor="center", fill="both")
     
     global InputLabel
-    InputLabel = Entry(frameEntry, width=40, borderwidth=12, relief='ridge')
+    InputLabel = Entry(frameEntry, width=32, borderwidth=12, relief='ridge', font=fontText)
+    InputLabel.insert(0, '지역명 입력')
     InputLabel.pack(side="left", expand=True)
 
     SearchButton = ImageButton(frameEntry, width=20, height=20)
@@ -215,7 +217,7 @@ def InitScreen():
 
     global SearchComboBox
     slist = ['동물병원', '동물약국', '유기동물 보호시설', '동물 장묘 허가업체', '동물용 의료용구 판매업체']
-    SearchComboBox = ttk.Combobox(frameCheck, width=37, height=5, values=slist)
+    SearchComboBox = ttk.Combobox(frameCheck, width=30, height=5, values=slist, font=fontText)
     SearchComboBox.set("검색 옵션 설정")
     SearchComboBox.pack(side='left', expand=True)
 
@@ -227,7 +229,7 @@ def InitScreen():
     global listBox
     LBScrollbar = Scrollbar(frameList)
     UBScrollbar = Scrollbar(frameList, orient='horizontal')
-    listBox = Listbox(frameList, selectmode='extended', width=50, height=12, borderwidth=12, relief='ridge', xscrollcommand=UBScrollbar.set, yscrollcommand=LBScrollbar.set)
+    listBox = Listbox(frameList, selectmode='extended', width=50, height=11, borderwidth=12, relief='ridge', font=fontText, xscrollcommand=UBScrollbar.set, yscrollcommand=LBScrollbar.set)
     LBScrollbar.pack(side="right", fill='y')
     LBScrollbar.config(command=listBox.yview)
     UBScrollbar.pack(side="bottom", fill='x')
@@ -237,7 +239,7 @@ def InitScreen():
     global GraphBox
     GraphBox = Listbox(frameGraph, selectmode='extended', width=35, borderwidth=12, relief='ridge')
     GraphBox.pack(side='right', fill='y')
-    imageLabel = ImageButton(frameGraph, width=100, height=90)
+    imageLabel = ImageButton(frameGraph, width=100, height=95)
     imageLabel.setImage('logo.png')
     imageLabel.pack()
     imageButton = ImageButton(frameGraph, width=100, height=100)
