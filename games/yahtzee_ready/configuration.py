@@ -51,10 +51,7 @@ class Configuration:
             for i in range(5):
                 count[Dice.getRoll(dices[i]) - 1] += 1
             if 3 in count and 2 in count:
-                for i in range(6):
-                    num += count[i] * (i + 1)
-                    if i == 5:
-                        break
+                num = 25
         if row == 11:
             for i in range(5):
                 list.append(Dice.getRoll(dices[i]))
@@ -85,12 +82,12 @@ class Configuration:
             first = Dice.getRoll(dices[0])
             for i in range(5):
                 if Dice.getRoll(dices[i]) != first:
-                    return -1
+                    return 0
             num = 50
         if row == 14:
             for i in range(5):
                 num += Dice.getRoll(dices[i])
-        if 6 <= row <= 7:
+        if 6 <= row <= 7 or 15 <= row <= 16:
             return -1
         else:
             return num

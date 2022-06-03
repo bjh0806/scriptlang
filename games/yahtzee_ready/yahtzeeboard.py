@@ -23,6 +23,7 @@ class YahtzeeBoard:
     player = 0      # players 리스트에서 현재 플레이어의 index.
     round = 0       # 13 라운드 중 몇번째인지 (0~12 사이의 값을 가짐)
     roll = 0        # 각 라운드에서 3번 중 몇번째 굴리기인지 (0~2 사이의 값을 가짐)
+    do = 0
     # 색깔
     color_btn_bg = 'SystemButtonFace'
 
@@ -117,7 +118,6 @@ class YahtzeeBoard:
             self.bottomLabel.configure(text="카테고리를 선택하세요")
             self.rollDice['state'] = 'disabled'
             self.rollDice['bg'] = 'light gray'
-            self.roll = 0
 
     # 각 주사위에 해당되는 버튼 클릭 : disable 시키고 배경색을 어둡게 바꿔 표현해 주기.
     def diceListener(self, row):
@@ -139,39 +139,63 @@ class YahtzeeBoard:
         # (2) 선택한 카테고리의 점수를 버튼에 적고 
         # (3) 버튼을 disable 시킴.
         # TODO: 구현
-        Player.setScore(cur_player, score, index)
-        Player.setAtUsed(cur_player, index)
-        self.fields[row][self.player].config(text=score)
-        self.fields[row][self.player]['state'] = 'disabled'
+        if self.roll != 0:
+            cur_player.setScore(score, index)
+            cur_player.setAtUsed(index)
+            self.fields[row][self.player].config(text=score)
+            self.fields[row][self.player]['state'] = 'disabled'
+            self.fields[row][self.player]['bg'] = 'light gray'
+            self.do = 1
         
         # UPPER category가 전부 사용되었으면(cur_player.allUpperUsed()로써 확인)
         # -> cur_player.getUpperScore() 점수에 따라
         #    UI의 UPPERTOTAL, UPPERBONUS 에 내용 채우기.
         # TODO: 구현
         if cur_player.allUpperUsed():
-            self.fields[6][self.player].config(text=cur_player.getUpperScore())
+            self.fields[self.UPPERTOTAL][self.player].config(text=cur_player.getUpperScore())
             if cur_player.getUpperScore() >= 63:
-                self.fields[7][self.player].config(text='35')
+                self.fields[self.UPPERBONUS][self.player].config(text='35')
 
         # LOWER category 전부 사용되었으면(cur_player.allLowerUsed()로써 확인) 
         # -> cur_player.getLowerScore() 점수에 따라
         #   UI의 LOWERTOTAL 에 내용 채우기.
         # TODO: 구현
         if cur_player.allLowerUsed():
-            self.fields[15][self.player].config(text=cur_player.getLowerScore())
+            self.fields[self.LOWERTOTAL][self.player].config(text=cur_player.getLowerScore())
         # UPPER category와 LOWER category가 전부 사용되었으면 
         # -> UI의 TOTAL 에 내용 채우기.
         # TODO: 구현
-        total = 0
         if cur_player.allUpperUsed() and cur_player.allLowerUsed():
-            total = cur_player.getUpperScore() + cur_player.getLowerScore()
-            self.fields[16][self.player].config(text=total)
+            cur_player.total = cur_player.getUpperScore() + cur_player.getLowerScore()
+            self.fields[self.TOTAL][self.player].config(text=cur_player.total)
         # 다음 플레이어로 가기.
-        self.player = (self.player + 1) % self.numPlayers
+        if self.do == 1:
+            self.player = (self.player + 1) % self.numPlayers
+            self.roll = 0
+            self.do = 0
 
         # 선택할 수 없는 카테고리들과 현재 player 것이 아닌 버튼들은 disable 시키기.
         # 그 외는 enable 시키기.
         # TODO: 구현
+        for i in range(self.numPlayers):
+            if i != self.player:
+                for j in range(15):
+                    if j < 6 or j > 7:
+                        self.fields[j][i]['state'] = 'disabled'
+                        self.fields[j][i]['bg'] = 'light gray'
+            else:
+                for j in range(15):
+                    if j < 6 or j > 7:
+                        self.fields[j][i]['state'] = 'normal'
+                        self.fields[j][i]['bg'] = self.color_btn_bg
+                for j in range(13):
+                    if self.players[i].used[j]:
+                        if j > 5:
+                            k = j + 2
+                        else:
+                            k = j
+                        self.fields[k][i]['state'] = 'disabled'
+                        self.fields[k][i]['bg'] = 'light gray'
 
         # 라운드 증가 시키기.
         if self.player == 0:
@@ -180,6 +204,16 @@ class YahtzeeBoard:
         # 게임이 종료되었는지 검사 (13 round의 마지막 플레이어일 때) 
         # -> 이긴 사람을 알리고 새 게임 시작.
         # TODO: 구현
+        if self.round == 13 and self.player == 0:
+            max = 0
+            winner = 0
+            for i in range(self.numPlayers):
+                if self.players[i].total > max:
+                    max = self.players[i].total
+                    winner = i
+            MsgBox = messagebox.showinfo("알림", "{} 이김!".format(self.players[winner].toString()))
+            if MsgBox == 'ok':
+                self.InitGame()
 
         # 다시 Roll Dice 버튼과 diceButtons 버튼들을 활성화.
         self.rollDice.configure(text="Roll Dice")
@@ -191,7 +225,7 @@ class YahtzeeBoard:
             self.diceButtons[i]['bg'] = self.color_btn_bg
 
         # bottomLabel 초기화.
-        self.bottomLabel.configure(text=cur_player.toString()+
+        self.bottomLabel.configure(text=self.players[self.player].toString()+
             "차례: Roll Dice 버튼을 누르세요")
 
 if __name__ == '__main__':
