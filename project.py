@@ -193,7 +193,18 @@ def Pressed(event):
             i = i + 1
 
 def onSearch(event):
+    global imageLabel
     getHospitalDataFromXml()
+    if SearchComboBox.get() == '동물약국':
+        imageLabel.setImage('logo2.png')
+    elif SearchComboBox.get() == '유기동물 보호시설':
+        imageLabel.setImage('logo3.png')
+    elif SearchComboBox.get() == '동물 장묘 허가업체':
+        imageLabel.setImage('logo4.png')
+    elif SearchComboBox.get() == '동물용 의료용구 판매업체':
+        imageLabel.setImage('logo5.png')
+    else:
+        imageLabel.setImage('logo.png')
 
 def getStr(s):
     return '' if not s else s
@@ -223,6 +234,7 @@ def SearchHospital(strXml):
             i = i + 1
 
 def InitScreen():
+    global imageLabel
     fontTitle = font.Font(g_Tk, size=14, family='배달의민족 한나는 열한살')
     fontText = font.Font(g_Tk, size=12, family='배달의민족 한나체 Air')
     frameTitle = Frame(g_Tk, padx=10, pady=10)
