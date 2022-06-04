@@ -12,22 +12,21 @@ class YahtzeeBoard:
     LOWERTOTAL = 15  # "Lower Scores" 위치의 index.
     TOTAL = 16  # "Total" 위치의 index.
 
-    # 객체 리스트
-    dice = []       # Dice() 객체의 리스트.
-    diceButtons = [] # 각 주사위를 표현하는 Button 객체의 리스트.
-    fields = []     # 각 플레이어별 점수판(카테고리). Button 객체의 2차원 리스트.
-                    # 열: 플레이어 (0열=플레이어1, 1열=플레이어2,…)
-                    # 17행: upper카테고리6행, upperScore, upperBonus, lower카테고리7행, LowerScore, Total
-    players = []    # 플레이어 수 만큼의 Player 인스턴스를 가짐.
-    numPlayers = 0  # # 플레이어 수
-    player = 0      # players 리스트에서 현재 플레이어의 index.
-    round = 0       # 13 라운드 중 몇번째인지 (0~12 사이의 값을 가짐)
-    roll = 0        # 각 라운드에서 3번 중 몇번째 굴리기인지 (0~2 사이의 값을 가짐)
-    do = 0
     # 색깔
     color_btn_bg = 'SystemButtonFace'
 
     def __init__(self):
+        self.dice = []       # Dice() 객체의 리스트.
+        self.diceButtons = [] # 각 주사위를 표현하는 Button 객체의 리스트.
+        self.fields = []     # 각 플레이어별 점수판(카테고리). Button 객체의 2차원 리스트.
+                        # 열: 플레이어 (0열=플레이어1, 1열=플레이어2,…)
+                        # 17행: upper카테고리6행, upperScore, upperBonus, lower카테고리7행, LowerScore, Total
+        self.players = []    # 플레이어 수 만큼의 Player 인스턴스를 가짐.
+        self.numPlayers = 0  # # 플레이어 수
+        self.player = 0      # players 리스트에서 현재 플레이어의 index.
+        self.round = 0       # 13 라운드 중 몇번째인지 (0~12 사이의 값을 가짐)
+        self.roll = 0        # 각 라운드에서 3번 중 몇번째 굴리기인지 (0~2 사이의 값을 가짐)
+        self.do = 0
         self.InitGame()
 
     def InitGame(self):     #player window 생성하고 최대 10명까지 플레이어 설정
@@ -168,6 +167,12 @@ class YahtzeeBoard:
         if cur_player.allUpperUsed() and cur_player.allLowerUsed():
             cur_player.total = cur_player.getUpperScore() + cur_player.getLowerScore()
             self.fields[self.TOTAL][self.player].config(text=cur_player.total)
+
+        # 라운드 증가 시키기.
+        if self.do == 1:
+            if self.player == 0:
+                self.round += 1
+
         # 다음 플레이어로 가기.
         if self.do == 1:
             self.player = (self.player + 1) % self.numPlayers
@@ -197,10 +202,6 @@ class YahtzeeBoard:
                         self.fields[k][i]['state'] = 'disabled'
                         self.fields[k][i]['bg'] = 'light gray'
 
-        # 라운드 증가 시키기.
-        if self.player == 0:
-            self.round += 1
-
         # 게임이 종료되었는지 검사 (13 round의 마지막 플레이어일 때) 
         # -> 이긴 사람을 알리고 새 게임 시작.
         # TODO: 구현
@@ -213,7 +214,8 @@ class YahtzeeBoard:
                     winner = i
             MsgBox = messagebox.showinfo("알림", "{} 이김!".format(self.players[winner].toString()))
             if MsgBox == 'ok':
-                self.InitGame()
+                self.window.destroy()
+                YahtzeeBoard()
 
         # 다시 Roll Dice 버튼과 diceButtons 버튼들을 활성화.
         self.rollDice.configure(text="Roll Dice")
