@@ -8,6 +8,7 @@ from turtle import bgcolor
 from xml.dom.minidom import Element
 from urllib.parse import quote
 import tkinter.ttk as ttk
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import folium
 import webbrowser
@@ -119,11 +120,14 @@ addrEmail = None
 def onEmailInput():
     global addrEmail
     addrEmail = inputEmail.get()
-    msg = MIMEText(str(listBox.get(0, 100)))
+    msg = MIMEMultipart('alternative')
     if SearchComboBox.get() == '검색 옵션 설정':
         msg['Subject'] = '동물 시설 검색 결과 - {}'.format(InputLabel.get())
     else:
         msg['Subject'] = '동물 시설 검색 결과 - {} / {}'.format(InputLabel.get(), SearchComboBox.get())
+    for i in range(100):
+        HtmlPart = MIMEText('{}\n'.format(str(listBox.get(i))), 'html', _charset = 'UTF-8')
+        msg.attach(HtmlPart)
     sendMail('skscjswoz1@gmail.com', addrEmail, msg)
     popup.destroy()
 
