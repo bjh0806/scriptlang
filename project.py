@@ -1,5 +1,3 @@
-from ast import parse
-from re import L
 from tkinter import *
 from tkinter import font
 from http.client import HTTPSConnection
@@ -175,7 +173,7 @@ def Pressed(event):
                 map_osm.save('osm.html')
                 webbrowser.open_new('osm.html')
             i = i + 1
-        if SearchComboBox.get() == '동물 장묘 허가업체':
+        elif SearchComboBox.get() == '동물 장묘 허가업체':
             if i == iSearchIndex:
                 locationx = item.find('REFINE_WGS84_LAT').text
                 locationy = item.find('REFINE_WGS84_LOGT').text
@@ -196,9 +194,80 @@ def Pressed(event):
                 webbrowser.open_new('osm.html')
             i = i + 1
 
+def drawGraph(canvas, data, canvasWidth, canvasHeight):
+    canvas.delete("grim")
+
+    if not len(data):
+        canvas.create_text(canvasWidth/2, (canvasHeight/2), text="No Data", tags="grim")
+        return
+
+    nData = len(data)
+    nMax = max(data)
+    nMin = min(data)
+
+    canvas.create_rectangle(0, 0, canvasWidth, canvasHeight, fill='white', tag="grim")
+
+    if nMax == 0:
+        nMax = 1
+
+    rectWidth = (canvasWidth // nData)
+    bottom = canvasHeight - 20
+    maxheight = canvasHeight - 40
+    for i in range(nData):
+        if nMax == data[i]:color="red"
+        elif nMin == data[i]:color='blue'
+        else:color="grey"
+
+        curHeight = maxheight * data[i] / nMax
+        top = bottom - curHeight
+        left = i * rectWidth
+        right = (i + 1) * rectWidth
+        canvas.create_rectangle(left, top, right, bottom, fill=color, tag="grim", activefill='yellow')
+        canvas.create_text((left+right)//2, top-10, text=data[i], tags="grim")
+        canvas.create_text((left+right)//2, bottom+10, text=i+1, tags="grim")
+
+def getData():
+    global server, conn
+    GraphData = []
+    Data = [0, 0, 0, 0, 0]
+    if conn == None:
+        connectOpenAPIServer()
+    for i in range(5):
+        if i == 1:
+            uri = userURIBuilder("/AnimalPharmacy?KEY=80e0c92a5694415ea393e4481125d632&SIGUN_NM=", InputLabel.get())
+        elif i == 2:
+            uri = userURIBuilder("/OrganicAnimalProtectionFacilit?KEY=855ef34a84c84c44a4226774f236406a&SIGUN_NM=", InputLabel.get())
+        elif i == 3:
+            uri = userURIBuilder("/DoanmalfunrlPrmisnentrp?KEY=0e630d78165442a59187a6de5fb0e55f&SIGUN_NM=", InputLabel.get())
+        elif i == 4:
+            uri = userURIBuilder("/AnimalMedicalCareThing?KEY=2fd131ecbf784976954fc6678468c173&SIGUN_NM=", InputLabel.get())
+        else:
+            uri = userURIBuilder("/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_NM=", InputLabel.get())
+        conn.request("GET", uri)
+        req = conn.getresponse()
+        if int(req.status) == 200:
+            parseData = ElementTree.fromstring(req.read())
+            itemElements = parseData.iter("row")
+            j = 1
+
+            for item in itemElements:
+                if i == 2:
+                    j = j + 1
+                elif i == 3:
+                    j = j + 1
+                elif getStr(item.find('BSN_STATE_NM').text) != '폐업' and getStr(item.find('BSN_STATE_NM').text) != '말소':
+                    j = j + 1
+        Data[i] = j - 1
+
+    for i in range(5):
+        GraphData.append(Data[i])
+
+    drawGraph(GraphBox, GraphData, 255, 200)
+        
 def onSearch(event):
     global imageLabel
     getHospitalDataFromXml()
+    getData()
     if SearchComboBox.get() == '동물약국':
         imageLabel.setImage('logo2.png')
     elif SearchComboBox.get() == '유기동물 보호시설':
@@ -228,11 +297,11 @@ def SearchHospital(strXml):
             _text = str(i) + '. ' + getStr(item.find('ENTRPS_NM').text) + ' : ' + getStr(item.find('REFINE_ROADNM_ADDR').text) + ' / ' + getStr(item.find('ENTRPS_TELNO').text)
             listBox.insert(i - 1, _text)
             i = i + 1
-        if SearchComboBox.get() == '동물 장묘 허가업체':
+        elif SearchComboBox.get() == '동물 장묘 허가업체':
             _text = str(i) + '. ' + getStr(item.find('BIZPLC_NM').text) + ' : ' + getStr(item.find('REFINE_ROADNM_ADDR').text) + ' / ' + getStr(item.find('TELNO').text)
             listBox.insert(i - 1, _text)
             i = i + 1
-        elif getStr(item.find('BSN_STATE_NM').text) != '폐업':
+        elif getStr(item.find('BSN_STATE_NM').text) != '폐업' and getStr(item.find('BSN_STATE_NM').text) != '말소':
             _text = str(i) + '. ' + getStr(item.find('BIZPLC_NM').text) + ' : ' + getStr(item.find('REFINE_ROADNM_ADDR').text) + ' / ' + getStr(item.find('LOCPLC_FACLT_TELNO').text)
             listBox.insert(i - 1, _text)
             i = i + 1
@@ -286,9 +355,11 @@ def InitScreen():
     UBScrollbar.config(command=listBox.xview)
     listBox.pack(side='left', fill='x')
 
-    global GraphBox
-    GraphBox = Listbox(frameGraph, selectmode='extended', width=35, borderwidth=12, relief='ridge')
+    global GraphBox, GraphData
+    GraphData = []
+    GraphBox = Canvas(frameGraph, width=250)
     GraphBox.pack(side='right', fill='y')
+    drawGraph(GraphBox, GraphData, 255, 200)
     imageLabel = ImageLabel(frameGraph, width=100, height=95)
     imageLabel.setImage('logo.png')
     imageLabel.pack()
