@@ -183,7 +183,7 @@ def Pressed(event):
                 map_osm.save('osm.html')
                 webbrowser.open_new('osm.html')
             i = i + 1
-        elif getStr(item.find('BSN_STATE_NM').text) != '폐업':
+        elif getStr(item.find('BSN_STATE_NM').text) != '폐업' and getStr(item.find('BSN_STATE_NM').text) != '말소':
             if i == iSearchIndex:
                 locationx = item.find('REFINE_WGS84_LAT').text
                 locationy = item.find('REFINE_WGS84_LOGT').text
@@ -214,17 +214,35 @@ def drawGraph(canvas, data, canvasWidth, canvasHeight):
     bottom = canvasHeight - 20
     maxheight = canvasHeight - 40
     for i in range(nData):
-        if nMax == data[i]:color="red"
-        elif nMin == data[i]:color='blue'
-        else:color="grey"
+        if SearchComboBox.get() == '동물약국' and i == 1:
+            color="orange"
+        elif SearchComboBox.get() == '유기동물 보호시설' and i == 2:
+            color="yellow"
+        elif SearchComboBox.get() == '동물 장묘 허가업체' and i == 3:
+            color="green"
+        elif SearchComboBox.get() == '동물용 의료용구 판매업체' and i == 4:
+            color="blue"
+        elif (SearchComboBox.get() == '동물병원' or SearchComboBox.get() == '검색 옵션 설정') and i == 0:
+            color="red"
+        else:
+            color="grey"
 
         curHeight = maxheight * data[i] / nMax
         top = bottom - curHeight
         left = i * rectWidth
         right = (i + 1) * rectWidth
-        canvas.create_rectangle(left, top, right, bottom, fill=color, tag="grim", activefill='yellow')
+        canvas.create_rectangle(left, top, right, bottom, fill=color, tag="grim", activefill='navy')
         canvas.create_text((left+right)//2, top-10, text=data[i], tags="grim")
-        canvas.create_text((left+right)//2, bottom+10, text=i+1, tags="grim")
+        if i == 0:
+            canvas.create_text((left+right)//2, bottom+10, text='병원', tags="grim")
+        elif i == 1:
+            canvas.create_text((left+right)//2, bottom+10, text='약국', tags="grim")
+        elif i == 2:
+            canvas.create_text((left+right)//2, bottom+10, text='보호', tags="grim")
+        elif i == 3:
+            canvas.create_text((left+right)//2, bottom+10, text='장묘', tags="grim")
+        else:
+            canvas.create_text((left+right)//2, bottom+10, text='의료용구', tags="grim")
 
 def getData():
     global server, conn
