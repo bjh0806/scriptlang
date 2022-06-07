@@ -11,6 +11,7 @@ from email.mime.text import MIMEText
 import folium
 import webbrowser
 from xml.etree import ElementTree
+import spam
 
 conn = None
 server = "openapi.gg.go.kr"
@@ -322,6 +323,9 @@ def SearchHospital(strXml):
             _text = str(i) + '. ' + getStr(item.find('BIZPLC_NM').text) + ' : ' + getStr(item.find('REFINE_ROADNM_ADDR').text) + ' / ' + getStr(item.find('LOCPLC_FACLT_TELNO').text)
             listBox.insert(i - 1, _text)
             i = i + 1
+    
+    listBox.insert(100, '--------------------------------')
+    listBox.insert(100, '{0}{1}개를 확인하였습니다.'.format(spam.result(), spam.num(i)))
 
 def InitScreen():
     global imageLabel, fontText
