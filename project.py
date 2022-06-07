@@ -198,12 +198,11 @@ def drawGraph(canvas, data, canvasWidth, canvasHeight):
     canvas.delete("grim")
 
     if not len(data):
-        canvas.create_text(canvasWidth/2, (canvasHeight/2), text="No Data", tags="grim")
+        canvas.create_text(canvasWidth/2, (canvasHeight/2), font=fontText, text="검색 시 그래프 출력", tags="grim")
         return
 
     nData = len(data)
     nMax = max(data)
-    nMin = min(data)
 
     canvas.create_rectangle(0, 0, canvasWidth, canvasHeight, fill='white', tag="grim")
 
@@ -234,15 +233,15 @@ def drawGraph(canvas, data, canvasWidth, canvasHeight):
         canvas.create_rectangle(left, top, right, bottom, fill=color, tag="grim", activefill='navy')
         canvas.create_text((left+right)//2, top-10, text=data[i], tags="grim")
         if i == 0:
-            canvas.create_text((left+right)//2, bottom+10, text='병원', tags="grim")
+            canvas.create_text((left+right)//2, bottom+10, font=fontText, text='병원', tags="grim")
         elif i == 1:
-            canvas.create_text((left+right)//2, bottom+10, text='약국', tags="grim")
+            canvas.create_text((left+right)//2, bottom+10, font=fontText, text='약국', tags="grim")
         elif i == 2:
-            canvas.create_text((left+right)//2, bottom+10, text='보호', tags="grim")
+            canvas.create_text((left+right)//2, bottom+10, font=fontText, text='보호', tags="grim")
         elif i == 3:
-            canvas.create_text((left+right)//2, bottom+10, text='장묘', tags="grim")
+            canvas.create_text((left+right)//2, bottom+10, font=fontText, text='장묘', tags="grim")
         else:
-            canvas.create_text((left+right)//2, bottom+10, text='의료용구', tags="grim")
+            canvas.create_text((left+right)//2, bottom+10, font=fontText, text='의료용구', tags="grim")
 
 def getData():
     global server, conn
@@ -325,7 +324,7 @@ def SearchHospital(strXml):
             i = i + 1
 
 def InitScreen():
-    global imageLabel
+    global imageLabel, fontText
     fontTitle = font.Font(g_Tk, size=14, family='배달의민족 한나는 열한살')
     fontText = font.Font(g_Tk, size=12, family='배달의민족 한나체 Air')
     frameTitle = Frame(g_Tk, padx=10, pady=10)
@@ -375,7 +374,7 @@ def InitScreen():
 
     global GraphBox, GraphData
     GraphData = []
-    GraphBox = Canvas(frameGraph, width=250)
+    GraphBox = Canvas(frameGraph, width=253)
     GraphBox.pack(side='right', fill='y')
     drawGraph(GraphBox, GraphData, 255, 200)
     imageLabel = ImageLabel(frameGraph, width=100, height=95)
