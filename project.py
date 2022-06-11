@@ -1,9 +1,7 @@
 from tkinter import *
 from tkinter import font
-from image import *
-from internet import *
-from tkinter.tix import NoteBook
-from turtle import bgcolor
+from http.client import HTTPSConnection
+from urllib.parse import quote
 from urllib.parse import quote
 import tkinter.ttk as ttk
 from email.mime.multipart import MIMEMultipart
@@ -12,6 +10,39 @@ import folium
 import webbrowser
 from xml.etree import ElementTree
 import spam
+from image import *
+
+conn = None
+server = "openapi.gg.go.kr"
+
+def connectOpenAPIServer():
+    global conn, server
+    conn = HTTPSConnection(server)
+
+def userURIBuilder(uri, position):
+    if position.endswith("시") != True:
+        position += "시"
+    str = uri + quote(position)
+    return str
+
+def getHospitalDataFromXml():
+    global server, conn
+    if conn == None:
+        connectOpenAPIServer()
+    if SearchComboBox.get() == '동물약국':
+        uri = userURIBuilder("/AnimalPharmacy?KEY=80e0c92a5694415ea393e4481125d632&SIGUN_NM=", InputLabel.get())
+    elif SearchComboBox.get() == '유기동물 보호시설':
+        uri = userURIBuilder("/OrganicAnimalProtectionFacilit?KEY=855ef34a84c84c44a4226774f236406a&SIGUN_NM=", InputLabel.get())
+    elif SearchComboBox.get() == '동물 장묘 허가업체':
+        uri = userURIBuilder("/DoanmalfunrlPrmisnentrp?KEY=0e630d78165442a59187a6de5fb0e55f&SIGUN_NM=", InputLabel.get())
+    elif SearchComboBox.get() == '동물용 의료용구 판매업체':
+        uri = userURIBuilder("/AnimalMedicalCareThing?KEY=2fd131ecbf784976954fc6678468c173&SIGUN_NM=", InputLabel.get())
+    else:
+        uri = userURIBuilder("/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_NM=", InputLabel.get())
+    conn.request("GET", uri)
+    req = conn.getresponse()
+    if int(req.status) == 200:
+        return SearchHospital(req.read())
 
 popup = inputEmail = btnEmail = None
 addrEmail = None
@@ -95,6 +126,44 @@ def Pressed(event):
                 webbrowser.open_new('osm.html')
             i = i + 1
 
+def getData():
+    global server, conn
+    GraphData = []
+    Data = [0, 0, 0, 0, 0]
+    if conn == None:
+        connectOpenAPIServer()
+    for i in range(5):
+        if i == 1:
+            uri = userURIBuilder("/AnimalPharmacy?KEY=80e0c92a5694415ea393e4481125d632&SIGUN_NM=", InputLabel.get())
+        elif i == 2:
+            uri = userURIBuilder("/OrganicAnimalProtectionFacilit?KEY=855ef34a84c84c44a4226774f236406a&SIGUN_NM=", InputLabel.get())
+        elif i == 3:
+            uri = userURIBuilder("/DoanmalfunrlPrmisnentrp?KEY=0e630d78165442a59187a6de5fb0e55f&SIGUN_NM=", InputLabel.get())
+        elif i == 4:
+            uri = userURIBuilder("/AnimalMedicalCareThing?KEY=2fd131ecbf784976954fc6678468c173&SIGUN_NM=", InputLabel.get())
+        else:
+            uri = userURIBuilder("/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_NM=", InputLabel.get())
+        conn.request("GET", uri)
+        req = conn.getresponse()
+        if int(req.status) == 200:
+            parseData = ElementTree.fromstring(req.read())
+            itemElements = parseData.iter("row")
+            j = 1
+
+            for item in itemElements:
+                if i == 2:
+                    j = j + 1
+                elif i == 3:
+                    j = j + 1
+                elif getStr(item.find('BSN_STATE_NM').text) != '폐업' and getStr(item.find('BSN_STATE_NM').text) != '말소':
+                    j = j + 1
+        Data[i] = j - 1
+
+    for i in range(5):
+        GraphData.append(Data[i])
+
+    drawGraph(GraphBox, GraphData, 255, 200)
+
 def drawGraph(canvas, data, canvasWidth, canvasHeight):
     canvas.delete("grim")
 
@@ -146,8 +215,8 @@ def drawGraph(canvas, data, canvasWidth, canvasHeight):
         
 def onSearch(event):
     global imageLabel
-    Internet.getHospitalDataFromXml()
-    Internet.getData()
+    getHospitalDataFromXml()
+    getData()
     if SearchComboBox.get() == '동물약국':
         imageLabel.setImage('logo2.png')
     elif SearchComboBox.get() == '유기동물 보호시설':
