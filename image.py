@@ -9,6 +9,7 @@ class ImageLabel(Label):
             self.height = height
         if filenameOrUrl:
             self.setImage(filenameOrUrl)
+
     def setImage(self, flienameOrUrl):
         from PIL import Image, ImageTk
         if flienameOrUrl.startswith('http'):
@@ -43,6 +44,7 @@ class ImageButton(Button):
             self.height = height
         if filenameOrUrl:
             self.setImage(filenameOrUrl)
+            
     def setImage(self, flienameOrUrl):
         from PIL import Image, ImageTk
         if flienameOrUrl.startswith('http'):

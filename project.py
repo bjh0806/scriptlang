@@ -1,48 +1,15 @@
 from tkinter import *
 from tkinter import font
-from http.client import HTTPSConnection
-from urllib.parse import quote
-from urllib.parse import quote
 import tkinter.ttk as ttk
+from xml.etree import ElementTree
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import folium
 import webbrowser
-from xml.etree import ElementTree
 import spam
 from image import *
-
-conn = None
-server = "openapi.gg.go.kr"
-
-def connectOpenAPIServer():
-    global conn, server
-    conn = HTTPSConnection(server)
-
-def userURIBuilder(uri, position):
-    if position.endswith("시") != True:
-        position += "시"
-    str = uri + quote(position)
-    return str
-
-def getHospitalDataFromXml():
-    global server, conn
-    if conn == None:
-        connectOpenAPIServer()
-    if SearchComboBox.get() == '동물약국':
-        uri = userURIBuilder("/AnimalPharmacy?KEY=80e0c92a5694415ea393e4481125d632&SIGUN_NM=", InputLabel.get())
-    elif SearchComboBox.get() == '유기동물 보호시설':
-        uri = userURIBuilder("/OrganicAnimalProtectionFacilit?KEY=855ef34a84c84c44a4226774f236406a&SIGUN_NM=", InputLabel.get())
-    elif SearchComboBox.get() == '동물 장묘 허가업체':
-        uri = userURIBuilder("/DoanmalfunrlPrmisnentrp?KEY=0e630d78165442a59187a6de5fb0e55f&SIGUN_NM=", InputLabel.get())
-    elif SearchComboBox.get() == '동물용 의료용구 판매업체':
-        uri = userURIBuilder("/AnimalMedicalCareThing?KEY=2fd131ecbf784976954fc6678468c173&SIGUN_NM=", InputLabel.get())
-    else:
-        uri = userURIBuilder("/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_NM=", InputLabel.get())
-    conn.request("GET", uri)
-    req = conn.getresponse()
-    if int(req.status) == 200:
-        return SearchHospital(req.read())
+from internet import *
+from graph import *
 
 popup = inputEmail = btnEmail = None
 addrEmail = None
@@ -125,111 +92,21 @@ def Pressed(event):
                 map_osm.save('osm.html')
                 webbrowser.open_new('osm.html')
             i = i + 1
-
-def getData():
-    global server, conn
-    GraphData = []
-    Data = [0, 0, 0, 0, 0]
-    if conn == None:
-        connectOpenAPIServer()
-    for i in range(5):
-        if i == 1:
-            uri = userURIBuilder("/AnimalPharmacy?KEY=80e0c92a5694415ea393e4481125d632&SIGUN_NM=", InputLabel.get())
-        elif i == 2:
-            uri = userURIBuilder("/OrganicAnimalProtectionFacilit?KEY=855ef34a84c84c44a4226774f236406a&SIGUN_NM=", InputLabel.get())
-        elif i == 3:
-            uri = userURIBuilder("/DoanmalfunrlPrmisnentrp?KEY=0e630d78165442a59187a6de5fb0e55f&SIGUN_NM=", InputLabel.get())
-        elif i == 4:
-            uri = userURIBuilder("/AnimalMedicalCareThing?KEY=2fd131ecbf784976954fc6678468c173&SIGUN_NM=", InputLabel.get())
-        else:
-            uri = userURIBuilder("/Animalhosptl?KEY=cbd2ad3e942d4831a1c412193d392e96&SIGUN_NM=", InputLabel.get())
-        conn.request("GET", uri)
-        req = conn.getresponse()
-        if int(req.status) == 200:
-            parseData = ElementTree.fromstring(req.read())
-            itemElements = parseData.iter("row")
-            j = 1
-
-            for item in itemElements:
-                if i == 2:
-                    j = j + 1
-                elif i == 3:
-                    j = j + 1
-                elif getStr(item.find('BSN_STATE_NM').text) != '폐업' and getStr(item.find('BSN_STATE_NM').text) != '말소':
-                    j = j + 1
-        Data[i] = j - 1
-
-    for i in range(5):
-        GraphData.append(Data[i])
-
-    drawGraph(GraphBox, GraphData, 255, 200)
-
-def drawGraph(canvas, data, canvasWidth, canvasHeight):
-    canvas.delete("grim")
-
-    if not len(data):
-        canvas.create_text(canvasWidth/2, (canvasHeight/2), font=fontText, text="검색 시 그래프 출력", tags="grim")
-        return
-
-    nData = len(data)
-    nMax = max(data)
-
-    canvas.create_rectangle(0, 0, canvasWidth, canvasHeight, fill='white', tag="grim")
-
-    if nMax == 0:
-        nMax = 1
-
-    rectWidth = (canvasWidth // nData)
-    bottom = canvasHeight - 20
-    maxheight = canvasHeight - 40
-    for i in range(nData):
-        if SearchComboBox.get() == '동물약국' and i == 1:
-            color="orange"
-        elif SearchComboBox.get() == '유기동물 보호시설' and i == 2:
-            color="yellow"
-        elif SearchComboBox.get() == '동물 장묘 허가업체' and i == 3:
-            color="green"
-        elif SearchComboBox.get() == '동물용 의료용구 판매업체' and i == 4:
-            color="blue"
-        elif (SearchComboBox.get() == '동물병원' or SearchComboBox.get() == '검색 옵션 설정') and i == 0:
-            color="red"
-        else:
-            color="grey"
-
-        curHeight = maxheight * data[i] / nMax
-        top = bottom - curHeight
-        left = i * rectWidth
-        right = (i + 1) * rectWidth
-        canvas.create_rectangle(left, top, right, bottom, fill=color, tag="grim", activefill='navy')
-        canvas.create_text((left+right)//2, top-10, text=data[i], tags="grim")
-        if i == 0:
-            canvas.create_text((left+right)//2, bottom+10, font=fontText, text='병원', tags="grim")
-        elif i == 1:
-            canvas.create_text((left+right)//2, bottom+10, font=fontText, text='약국', tags="grim")
-        elif i == 2:
-            canvas.create_text((left+right)//2, bottom+10, font=fontText, text='보호', tags="grim")
-        elif i == 3:
-            canvas.create_text((left+right)//2, bottom+10, font=fontText, text='장묘', tags="grim")
-        else:
-            canvas.create_text((left+right)//2, bottom+10, font=fontText, text='의료용구', tags="grim")
         
 def onSearch(event):
     global imageLabel
-    getHospitalDataFromXml()
-    getData()
+    SearchHospital(getHospitalDataFromXml(SearchComboBox.get(), InputLabel.get()))
+    drawGraph(g_Tk, SearchComboBox.get(), GraphBox, getData(InputLabel.get()), 255, 200)
     if SearchComboBox.get() == '동물약국':
-        imageLabel.setImage('logo2.png')
+        imageLabel.setImage('picture/logo2.png')
     elif SearchComboBox.get() == '유기동물 보호시설':
-        imageLabel.setImage('logo3.png')
+        imageLabel.setImage('picture/logo3.png')
     elif SearchComboBox.get() == '동물 장묘 허가업체':
-        imageLabel.setImage('logo4.png')
+        imageLabel.setImage('picture/logo4.png')
     elif SearchComboBox.get() == '동물용 의료용구 판매업체':
-        imageLabel.setImage('logo5.png')
+        imageLabel.setImage('picture/logo5.png')
     else:
-        imageLabel.setImage('logo.png')
-
-def getStr(s):
-    return '' if not s else s
+        imageLabel.setImage('picture/logo.png')
 
 def SearchHospital(strXml):
     global listBox, parseData
@@ -282,7 +159,7 @@ def InitScreen():
     InputLabel.pack(side="left", expand=True)
 
     SearchButton = ImageButton(frameEntry, width=20, height=20)
-    SearchButton.setImage('glass.png')
+    SearchButton.setImage('picture/glass.png')
     SearchButton.bind('<Button-1>', onSearch)
     SearchButton.pack(side="right", expand=True, fill="both")
 
@@ -293,7 +170,7 @@ def InitScreen():
     SearchComboBox.pack(side='left', expand=True)
 
     sendEmailButton = ImageButton(frameCheck, width=35, height=25)
-    sendEmailButton.setImage('gmail.png')
+    sendEmailButton.setImage('picture/gmail.png')
     sendEmailButton.bind('<Button-1>', onEmailPopup)
     sendEmailButton.pack(side='right', expand=True, fill="both")
 
@@ -311,12 +188,12 @@ def InitScreen():
     GraphData = []
     GraphBox = Canvas(frameGraph, width=253)
     GraphBox.pack(side='right', fill='y')
-    drawGraph(GraphBox, GraphData, 255, 200)
+    drawGraph(g_Tk, SearchComboBox.get(), GraphBox, GraphData, 255, 200)
     imageLabel = ImageLabel(frameGraph, width=100, height=95)
-    imageLabel.setImage('logo.png')
+    imageLabel.setImage('picture/logo.png')
     imageLabel.pack()
     imageButton = ImageButton(frameGraph, width=100, height=100)
-    imageButton.setImage('map.png')
+    imageButton.setImage('picture/map.png')
     imageButton.bind('<Button-1>', Pressed)
     imageButton.pack(side='bottom')
 
