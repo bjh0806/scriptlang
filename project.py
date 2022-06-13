@@ -155,7 +155,7 @@ def InitScreen():
     
     global InputLabel
     InputLabel = Entry(frameEntry, width=32, borderwidth=12, relief='ridge', font=fontText)
-    InputLabel.insert(0, '지역명 입력')
+    InputLabel.insert(0, '지역명 입력 (시 단위)')
     InputLabel.pack(side="left", expand=True)
 
     SearchButton = ImageButton(frameEntry, width=20, height=20)
