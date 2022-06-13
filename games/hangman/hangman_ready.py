@@ -112,7 +112,7 @@ window.title("행맨") # Set a title
 
 def processKeyEvent(event):  
     global hangman
-    if event.char >= 'a' and event.char <= 'z':
+    if event.char >= 'a' and event.char <= 'z' and hangman.finished == 0:
         hangman.guess(event.char)
     elif event.keycode == 13:
         if hangman.finished > 0:
